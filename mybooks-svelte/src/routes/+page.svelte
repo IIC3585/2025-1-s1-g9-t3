@@ -1,52 +1,52 @@
 <script>
   import { goto } from '$app/navigation';
-
-  const irAAuth = () => {
-    goto('/auth');
-  };
+  const irAAuth = () => goto('/auth');
+  import FeatureCard from '$lib/FeatureCard.svelte';
 </script>
 
 <section class="min-h-screen bg-gradient-to-b from-yellow-100 via-orange-100 to-orange-200 flex flex-col justify-between font-sans">
+  
   <!-- Hero -->
-  <div class="text-center mt-24 px-4">
-    <h1 class="text-5xl font-extrabold text-gray-800 tracking-tight">📚 My Books</h1>
+  <div class="flex justify-center mt-16 sm:mt-20 px-4">
+    <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 sm:-translate-x-10 text-center sm:text-left">
+      <img src="/logo.svg" alt="MyBooks Logo" class="h-20 sm:h-28 md:h-32 w-auto" />
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-800 tracking-tight">My Books</h1>
+    </div>
   </div>
 
   <!-- Features -->
-    <div class="grid md:grid-cols-3 gap-8 px-8 mt-24 text-gray-700 text-center max-w-7xl mx-auto">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 px-6 sm:px-10 mt-14 text-gray-700 text-center max-w-7xl mx-auto">
+    <FeatureCard 
+        icon = "🔍"
+        title="Explora y opina sobre libros"
+        description="Descubre nuevos títulos, ve las reseñas y comparte tu opinión con otros lectores."
+    />
 
-    <div class="bg-orange-50 p-6 rounded-xl shadow-md hover:shadow-lg transition transform hover:scale-105">
-        <div class="text-6xl mb-6">🔍</div>
-        <h2 class="text-xl font-semibold mb-2">Explora y opina sobre libros</h2>
-        <p>Descubre nuevos títulos, ve las reseñas y comparte tu opinión con otros lectores.</p>
-    </div>
+    <FeatureCard 
+        icon = "📖"
+        title="Lleva el registro de tu lectura"
+        description="Marca los libros que ya leíste, los que te interesan y observa tu progreso."
+    />
 
-    <div class="bg-orange-50 p-6 rounded-xl shadow-md hover:shadow-lg transition transform hover:scale-105">
-        <div class="text-6xl mb-6">📖</div>
-        <h2 class="text-xl font-semibold mb-2">Lleva el registro de tu lectura</h2>
-        <p>Marca los libros que ya leíste, los que te interesan y observa tu progreso.</p>
-    </div>
-
-    <div class="bg-orange-50 p-6 rounded-xl shadow-md hover:shadow-lg transition transform hover:scale-105">
-        <div class="text-6xl mb-6">🌐</div>
-        <h2 class="text-xl font-semibold mb-2">Accede desde cualquier dispositivo</h2>
-        <p>Tu biblioteca siempre estará sincronizada entre dispositivos y respaldada en la nube.</p>
-    </div>
-    </div>
-
-
+    <FeatureCard 
+        icon = "🌐"
+        title="Accede desde cualquier dispositivo"
+        description="Tu biblioteca siempre estará sincronizada entre dispositivos y respaldada en la nube."
+    />
+  </div>
 
   <!-- Call to Action -->
-  <div class="text-center mt-12 mb-16">
+  <div class="text-center mt-12 mb-16 px-4">
     <button
-      class="px-8 py-4 bg-amber-600 text-white text-lg font-semibold rounded-full shadow-xl hover:bg-amber-700 transition"
-      on:click={irAAuth}>
-      Comenzar ahora
+    class="px-8 py-4 bg-amber-600 text-white text-lg font-semibold rounded-2xl shadow-xl hover:bg-amber-700 transform hover:scale-120 transition-transform duration-300 w-full sm:w-auto cursor-pointer"
+    on:click={irAAuth}>
+    Comenzar ahora
     </button>
+
   </div>
 
   <!-- Footer -->
-  <footer class="text-center text-gray-600 text-sm mb-6">
+  <footer class="text-center text-gray-600 text-sm mb-6 px-4">
     &copy; 2025 MyBooks — Grupo 9
   </footer>
 </section>
