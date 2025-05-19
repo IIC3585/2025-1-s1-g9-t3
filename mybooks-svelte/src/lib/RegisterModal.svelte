@@ -1,17 +1,40 @@
 <script>
+  import { auth, db } from '$lib/firebase';
+  import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+  import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
   import { createEventDispatcher } from 'svelte';
-  const dispatch = createEventDispatcher();
 
-  const close = () => dispatch('close');
+  const dispatch = createEventDispatcher();
 
   let name = '';
   let email = '';
   let password = '';
+  let error = '';
+  const close = () => dispatch('close');
 
-  const handleRegister = () => {
-    // Aquí luego irá la lógica Firebase
-    console.log('Registro con', name, email, password);
-    close();
+  const handleRegister = async () => {
+    error = '';
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Agrega el nombre al perfil de Firebase Auth
+      await updateProfile(user, { displayName: name });
+
+      // Guarda el usuario en Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        uid: user.uid,
+        name,
+        email,
+        createdAt: serverTimestamp()
+      });
+
+      close(); // Cerrar modal si todo funciona
+    } catch (err) {
+      error = err.message;
+      console.error(err);
+      console.log(err.message);
+    }
   };
 </script>
 
@@ -42,6 +65,8 @@
         placeholder="Contraseña"
         class="px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400"
       />
+
+      {#if error}<p class="text-red-600 text-sm text-center">{error}</p>{/if}
       
       <button
         type="submit"

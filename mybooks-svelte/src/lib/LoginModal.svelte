@@ -1,16 +1,23 @@
 <script>
+  import { auth } from '$lib/firebase';
+  import { signInWithEmailAndPassword } from 'firebase/auth';
   import { createEventDispatcher } from 'svelte';
   const dispatch = createEventDispatcher();
 
-  const close = () => dispatch('close');
-
   let email = '';
   let password = '';
+  let error = '';
+  const close = () => dispatch('close');
 
-  const handleLogin = () => {
-    // Aquí luego iría la lógica Firebase
-    console.log('Login con', email, password);
-    close();
+  const handleLogin = async () => {
+    error = '';
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      close(); // cerrar modal si funciona
+    } catch (err) {
+      error = 'Correo o contraseña inválidos';
+      console.error(err);
+    }
   };
 </script>
 
@@ -34,6 +41,8 @@
         placeholder="Contraseña"
         class="px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
       />
+
+      {#if error}<p class="text-red-600 text-sm text-center">{error}</p>{/if}
       
       <button
         type="submit"
