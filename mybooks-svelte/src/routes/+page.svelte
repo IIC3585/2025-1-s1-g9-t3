@@ -4,12 +4,19 @@
   import LoginModal from '$lib/LoginModal.svelte';
   import RegisterModal from '$lib/RegisterModal.svelte';
 
+  import { user } from '$lib/stores/user';
+  import { goto } from '$app/navigation';
+
   let showModal = false;
-  let modalType = null; // 'auth', 'login', 'register'
+  let modalType = null;
 
   const goToAuth = () => {
-    showModal = true;
-    modalType = 'auth';
+    if ($user) {
+      goto('/search'); // Redirige directo si hay sesión activa
+    } else {
+      showModal = true;
+      modalType = 'auth';
+    }
   };
 </script>
 
@@ -40,7 +47,7 @@
 
   <!-- Footer -->
   <footer class="text-center text-gray-600 text-sm mb-6 px-4">
-    &copy; 2025 MyBooks — Grupo 9
+    &copy; 2025 My Books — Grupo 9
   </footer>
 </section>
 

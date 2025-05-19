@@ -1,6 +1,8 @@
 <script>
   import { auth } from '$lib/firebase';
   import { signInWithEmailAndPassword } from 'firebase/auth';
+  import { user } from '$lib/stores/user';
+  import { goto } from '$app/navigation';
   import { createEventDispatcher } from 'svelte';
   const dispatch = createEventDispatcher();
 
@@ -13,6 +15,9 @@
     error = '';
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      if ($user) {
+        goto('/search');
+      }
       close(); // cerrar modal si funciona
     } catch (err) {
       error = 'Correo o contraseña inválidos';
