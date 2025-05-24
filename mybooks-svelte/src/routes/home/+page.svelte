@@ -5,13 +5,15 @@
   import { user } from '$lib/stores/user';
 
   let currentUser;
-  $: {
-    if ($user) {
-      currentUser = $user.displayName || $user.email;
-    } else {
-      currentUser = 'Invitado';
-    }
+  $: if ($user) {
+    currentUser = $user.displayName || $user.email;
   }
+
+  const lists = [
+    { name: '📘 Leídos', route: '/read' },
+    { name: '📙 Recomendados', route: '/recommended' },
+    { name: '📗 Quiero Leer', route: '/want_to_read' }
+  ];
 
   const categories = [
     'Ficción', 'Historia', 'Tecnología', 'Ciencia', 'Misterio', 'Romance', 'Fantasía', 'Horror'
@@ -19,6 +21,11 @@
 
   const searchCategory = (category) => {
     goto(`/search?category=${encodeURIComponent(category)}`);
+  };
+
+  const closeSession = async () => {
+    await signOut(auth);
+    goto('/');
   };
 </script>
 
@@ -33,11 +40,31 @@
     <div>
       {#if $user}
         <span class="mr-4">Bienvenido, {currentUser}</span>
+        <button
+          on:click={closeSession}
+          class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+        >
+          Cerrar sesión
+        </button>
       {:else}
         <span class="text-gray-600">No has iniciado sesión.</span>
       {/if}
     </div>
   </nav>
+
+  <section class="mb-8">
+    <h2 class="text-2xl font-semibold mb-4">Tus Listas</h2>
+    <div class="flex flex-wrap gap-4">
+      {#each lists as list}
+        <a
+          href={list.route}
+          class="bg-amber-500 text-white px-4 py-2 rounded hover:bg-amber-600 transition"
+        >
+          {list.name}
+        </a>
+      {/each}
+    </div>
+  </section>
 
   <section>
     <h2 class="text-2xl font-semibold mb-4">Explorar por Categoría</h2>

@@ -3,15 +3,11 @@
     import { auth } from '$lib/firebase';
     import { signOut } from 'firebase/auth';
     import { user } from '$lib/stores/user';
-    import { page } from '$app/stores';
 
     let currentUser;
     $: if ($user) {
         currentUser = $user.displayName || $user.email;
     }
-
-    let category = 'General';
-    $: category = $page.url.searchParams.get('category') || 'General';
 
     let readBooks = [
         { id: 1, title: '1984', author: 'George Orwell', year: 1949 },
@@ -48,7 +44,7 @@
     </nav>
 
     <section class="mb-8">  
-        <h1 class="text-2xl font-bold mb-4">Busqueda de Libros de {category}</h1>
+        <h1 class="text-2xl font-bold mb-4">Libros que quiero Leer</h1>
 
         {#if readBooks.length > 0}
         <ul class="space-y-4">
@@ -61,7 +57,7 @@
             {/each}
         </ul>
         {:else}
-        <p>No encontre libros de {category}.</p>
+        <p>No has marcado libros como leídos todavía.</p>
         {/if}
     </section>
 </main>
