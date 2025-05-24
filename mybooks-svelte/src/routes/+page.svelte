@@ -12,7 +12,7 @@
 
   const goToAuth = () => {
     if ($user) {
-      goto('/search'); // Redirige directo si hay sesión activa
+      goto('/home'); // Redirige directo si hay sesión activa
     } else {
       showModal = true;
       modalType = 'auth';

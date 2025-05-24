@@ -16,7 +16,7 @@
     try {
       await signInWithEmailAndPassword(auth, email, password);
       if ($user) {
-        goto('/search');
+        goto('/home');
       }
       close(); // cerrar modal si funciona
     } catch (err) {
