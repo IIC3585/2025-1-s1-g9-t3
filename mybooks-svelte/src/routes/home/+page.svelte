@@ -9,44 +9,58 @@
     currentUser = $user.displayName || $user.email;
   }
 
-  const listas = [
-    { nombre: '📘 Leídos', ruta: '/leidos' },
-    { nombre: '📙 Recomendados', ruta: '/recomendados' },
-    { nombre: '📗 Quiero Leer', ruta: '/quiero-leer' }
+  const lists = [
+    { name: '📘 Leídos', route: '/read' },
+    { name: '📙 Recomendados', route: '/recommended' },
+    { name: '📗 Quiero Leer', route: '/want_to_read' }
   ];
 
-  const categorias = [
+  const categories = [
     'Ficción', 'Historia', 'Tecnología', 'Ciencia', 'Misterio', 'Romance', 'Fantasía', 'Horror'
   ];
 
-  const irABusqueda = (categoria) => {
-    goto(`/buscar?categoria=${encodeURIComponent(categoria)}`);
+  const searchCategory = (category) => {
+    goto(`/search?category=${encodeURIComponent(category)}`);
   };
 
-  const cerrarSesion = async () => {
+  const closeSession = async () => {
     await signOut(auth);
     goto('/');
   };
 </script>
 
 <main class="p-8 font-sans">
-  {#if $user}
-    <p class="text-2xl font-bold mb-6">Bienvenido, {currentUser}</p>
-    <button on:click={cerrarSesion}>Cerrar sesión</button>
-  {:else}
-    <p>No has iniciado sesión.</p>
-  {/if}
-  <h1 class="text-4xl font-bold mb-6">📚 Bienvenido a MyBooks</h1>
+  <nav class="bg-white shadow-md p-4 flex justify-between items-center mb-4">
+    <div class="text-2xl font-bold flex items-center gap-4">
+      <a href="/" class="flex items-center gap-2">
+        <img src="/logo.svg" alt="MyBooks Logo" class="h-10 sm:h-20 md:h-15 w-auto" />
+        Bienvenido a MyBooks
+      </a>
+    </div>
+    <div>
+      {#if $user}
+        <span class="mr-4">Bienvenido, {currentUser}</span>
+        <button
+          on:click={closeSession}
+          class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+        >
+          Cerrar sesión
+        </button>
+      {:else}
+        <span class="text-gray-600">No has iniciado sesión.</span>
+      {/if}
+    </div>
+  </nav>
 
   <section class="mb-8">
     <h2 class="text-2xl font-semibold mb-4">Tus Listas</h2>
     <div class="flex flex-wrap gap-4">
-      {#each listas as lista}
+      {#each lists as list}
         <a
-          href={lista.ruta}
+          href={list.route}
           class="bg-amber-500 text-white px-4 py-2 rounded hover:bg-amber-600 transition"
         >
-          {lista.nombre}
+          {list.name}
         </a>
       {/each}
     </div>
@@ -55,12 +69,12 @@
   <section>
     <h2 class="text-2xl font-semibold mb-4">Explorar por Categoría</h2>
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-      {#each categorias as categoria}
+      {#each categories as category}
         <button
-          on:click={() => irABusqueda(categoria)}
+          on:click={() => searchCategory(category)}
           class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 transition"
         >
-          {categoria}
+          {category}
         </button>
       {/each}
     </div>
