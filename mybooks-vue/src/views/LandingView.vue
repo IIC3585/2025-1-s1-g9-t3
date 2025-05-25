@@ -33,15 +33,15 @@
     <footer class="text-center text-gray-600 text-sm mb-6 px-4">
       &copy; 2025 My Books — Grupo 9
     </footer>
+
+    <!-- Modales -->
+    <LoginModal
+      v-if="showModal && modalType === 'login'"
+      @close="showModal = false" />
+    <RegisterModal
+      v-if="showModal && modalType === 'register'"
+      @close="showModal = false" />
   </section>
-
-  <LoginModal
-    v-if="showModal && modalType === 'login'"
-    @close="showModal = false" />
-
-  <RegisterModal
-    v-if="showModal && modalType === 'register'"
-    @close="showModal = false" />
 </template>
 
 <script setup>
@@ -60,7 +60,7 @@ const modalType = ref(null);
 
 const showLoginModal = () => {
   if (userStore.user) {
-    router.push('/home'); // Redirige directo si hay sesión activa
+    router.push('/home');
   } else {
     showModal.value = true;
     modalType.value = 'login';
@@ -69,11 +69,10 @@ const showLoginModal = () => {
 
 const showRegisterModal = () => {
   if (userStore.user) {
-    router.push('/home'); // Redirige directo si hay sesión activa
+    router.push('/home');
   } else {
     showModal.value = true;
     modalType.value = 'register';
   }
 };
-
 </script>
