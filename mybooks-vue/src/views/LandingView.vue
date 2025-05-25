@@ -16,11 +16,16 @@
     </div>
 
     <!-- Call to Action -->
-    <div class="text-center mt-12 mb-16 px-4">
+    <div class="text-center mt-12 mb-16 px-4 flex flex-col sm:flex-row gap-4 justify-center">
       <button
-        class="px-8 py-4 bg-amber-600 text-white text-lg font-semibold rounded-2xl shadow-xl hover:bg-amber-700 transform hover:scale-105 transition-transform duration-300 w-full sm:w-auto cursor-pointer"
-        @click="goToAuth">
-        Comenzar ahora
+        class="px-8 py-4 bg-blue-600 text-white text-lg font-semibold rounded-2xl shadow-xl hover:bg-blue-700 transform hover:scale-105 transition-transform duration-300 w-full sm:w-auto cursor-pointer"
+        @click="showLoginModal">
+        Iniciar sesión
+      </button>
+      <button
+        class="px-8 py-4 bg-green-600 text-white text-lg font-semibold rounded-2xl shadow-xl hover:bg-green-700 transform hover:scale-105 transition-transform duration-300 w-full sm:w-auto cursor-pointer"
+        @click="showRegisterModal">
+        Registrarse
       </button>
     </div>
 
@@ -29,12 +34,6 @@
       &copy; 2025 My Books — Grupo 9
     </footer>
   </section>
-
-  <AuthModal
-    v-if="showModal && modalType === 'auth'"
-    @close="showModal = false"
-    @login="modalType = 'login'"
-    @register="modalType = 'register'" />
 
   <LoginModal
     v-if="showModal && modalType === 'login'"
@@ -50,7 +49,6 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/store/user';
 import FeatureCard from '@/components/FeatureCard.vue';
-import AuthModal from '@/components/AuthModal.vue';
 import LoginModal from '@/components/LoginModal.vue';
 import RegisterModal from '@/components/RegisterModal.vue';
 
@@ -60,12 +58,22 @@ const userStore = useUserStore();
 const showModal = ref(false);
 const modalType = ref(null);
 
-const goToAuth = () => {
+const showLoginModal = () => {
   if (userStore.user) {
     router.push('/home'); // Redirige directo si hay sesión activa
   } else {
     showModal.value = true;
-    modalType.value = 'auth';
+    modalType.value = 'login';
   }
 };
+
+const showRegisterModal = () => {
+  if (userStore.user) {
+    router.push('/home'); // Redirige directo si hay sesión activa
+  } else {
+    showModal.value = true;
+    modalType.value = 'register';
+  }
+};
+
 </script>
