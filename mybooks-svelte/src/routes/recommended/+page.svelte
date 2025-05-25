@@ -45,9 +45,6 @@
 
         // Añadir el libro a la nueva lista
         await setDoc(doc(db, 'users', userId, targetList, book.id), book);
-
-        // Eliminarlo de la lista actual
-        await deleteDoc(doc(db, 'users', userId, 'recommended', book.id));
     }
 
     async function removeBook(bookId) {
@@ -117,12 +114,14 @@
                         >
                             Leer después
                         </button>
-                        <button
+                        {#if book.recommendedBy === currentUser}
+                            <button
                             on:click={() => removeBook(book.id)}
                             class="text-red-600 hover:underline text-sm"
                         >
                             Eliminar
                         </button>
+                        {/if}
                     </div>
 
                 </li>
