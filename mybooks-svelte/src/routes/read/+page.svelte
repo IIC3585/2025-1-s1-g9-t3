@@ -11,14 +11,26 @@
         currentUser = $user.displayName || $user.email;
     }
 
+    $: if ($user && !readBooks.length) {
+        loadBooks();
+    }
+
+    async function loadBooks() {
+        const userId = $user.uid;
+        const snapshot = await getDocs(collection(db, 'users', userId, 'readBooks'));
+        readBooks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    }
+
+
     let readBooks = [];
 
     onMount(async () => {
-        if ($user) {
-            const booksRef = collection(db, 'users', $user.uid, 'readBooks');
-            const snapshot = await getDocs(booksRef);
-            readBooks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        }
+        if (!$user) return;
+
+        const userId = $user.uid;
+        const booksSnapshot = await getDocs(collection(db, 'users', userId, 'readBooks'));
+        
+        readBooks = booksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     });
 
 
@@ -35,9 +47,6 @@
 
         // Eliminarlo de la lista actual
         await deleteDoc(doc(db, 'users', userId, 'readBooks', book.id));
-
-        // Actualizar UI local
-        readBooks = readBooks.filter(b => b.id !== book.id);
     }
 
     async function removeBook(bookId) {
@@ -95,16 +104,16 @@
                     </div>
                     <div class="mt-2 flex flex-col gap-2">
                         <button
-                            on:click={() => moveBook(book, 'recommendedBooks')}
+                            on:click={() => moveBook(book, 'recommended')}
                             class="text-blue-600 hover:underline text-sm"
                         >
                             Recomendar
                         </button>
                         <button
-                            on:click={() => moveBook(book, 'toReadBooks')}
+                            on:click={() => moveBook(book, 'toRead')}
                             class="text-green-600 hover:underline text-sm"
                         >
-                            Leer después
+                            Agregar a leer después
                         </button>
                         <button
                             on:click={() => removeBook(book.id)}
