@@ -4,7 +4,7 @@
     import { signOut } from 'firebase/auth';
     import { user } from '$lib/stores/user';
     import { onMount } from 'svelte';
-    import { collection, getDocs } from 'firebase/firestore';
+    import { collection, getDocs, doc, deleteDoc, setDoc } from 'firebase/firestore';
 
     let currentUser;
     $: if ($user) {
@@ -26,6 +26,25 @@
         await signOut(auth);
         goto('/');
     };
+
+    async function moveBook(book, targetList) {
+        const userId = $user.uid;
+
+        // Añadir el libro a la nueva lista
+        await setDoc(doc(db, 'users', userId, targetList, book.id), book);
+
+        // Eliminarlo de la lista actual
+        await deleteDoc(doc(db, 'users', userId, 'readBooks', book.id));
+
+        // Actualizar UI local
+        readBooks = readBooks.filter(b => b.id !== book.id);
+    }
+
+    async function removeBook(bookId) {
+        const userId = $user.uid;
+        await deleteDoc(doc(db, 'users', userId, 'readBooks', bookId));
+        readBooks = readBooks.filter(b => b.id !== bookId);
+    }
 </script>
 
 <main class="p-8 font-sans">
@@ -74,6 +93,27 @@
                         <p class="text-gray-700">Autor: {book.author}</p>
                         <p class="text-gray-500 text-sm">Publicado en {book.year}</p>
                     </div>
+                    <div class="mt-2 flex flex-col gap-2">
+                        <button
+                            on:click={() => moveBook(book, 'recommendedBooks')}
+                            class="text-blue-600 hover:underline text-sm"
+                        >
+                            Recomendar
+                        </button>
+                        <button
+                            on:click={() => moveBook(book, 'toReadBooks')}
+                            class="text-green-600 hover:underline text-sm"
+                        >
+                            Leer después
+                        </button>
+                        <button
+                            on:click={() => removeBook(book.id)}
+                            class="text-red-600 hover:underline text-sm"
+                        >
+                            Eliminar
+                        </button>
+                    </div>
+
                 </li>
             {/each}
 
