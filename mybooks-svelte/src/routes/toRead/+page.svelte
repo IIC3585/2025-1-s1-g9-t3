@@ -11,28 +11,15 @@
         currentUser = $user.displayName || $user.email;
     }
 
-    let recommended = [];
-
-    $: if ($user && !recommended.length) {
-        loadBooks();
-    }
-
-    async function loadBooks() {
-        const snapshot = await getDocs(collection(db, 'recommended'));
-        recommended = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    }
-
-
-    let readBooks = [];
+    let toRead = [];
 
     onMount(async () => {
-        if (!$user) return;
-        const snapshot = await getDocs(collection(db, 'recommended'));
-        recommended = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        if ($user) {
+            const booksRef = collection(db, 'users', $user.uid, 'toRead');
+            const snapshot = await getDocs(booksRef);
+            toRead = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        }
     });
-
 
 
     const closeSession = async () => {
@@ -47,13 +34,13 @@
         await setDoc(doc(db, 'users', userId, targetList, book.id), book);
 
         // Eliminarlo de la lista actual
-        await deleteDoc(doc(db, 'users', userId, 'recommended', book.id));
+        await deleteDoc(doc(db, 'users', userId, 'toRead', book.id));
     }
 
     async function removeBook(bookId) {
         const userId = $user.uid;
-        await deleteDoc(doc(db, 'users', userId, 'recommended', bookId));
-        recommended = recommended.filter(b => b.id !== bookId);
+        await deleteDoc(doc(db, 'users', userId, 'toRead', bookId));
+        toRead = toRead.filter(b => b.id !== bookId);
     }
 </script>
 
@@ -81,11 +68,10 @@
     </nav>
 
     <section class="mb-8">  
-        <h1 class="text-2xl font-bold mb-4">Libros Recomendados</h1>
-
-        {#if recommended.length > 0}
+        <h1 class="text-2xl font-bold mb-4">Libros que planeas leer</h1>
+        {#if toRead.length > 0}
         <ul class="space-y-4">
-            {#each recommended as book}
+            {#each toRead as book}
                 <li class="p-4 border rounded-xl shadow-md flex gap-4 items-start">
                     {#if book.image}
                         <img
@@ -102,7 +88,6 @@
                         <h2 class="text-xl font-semibold">{book.title}</h2>
                         <p class="text-gray-700">Autor: {book.author}</p>
                         <p class="text-gray-500 text-sm">Publicado en {book.year}</p>
-                        <p class="text-gray-500 text-sm">Recomendado por: {book.recommendedBy}</p>
                     </div>
                     <div class="mt-2 flex flex-col gap-2">
                         <button
@@ -112,10 +97,10 @@
                             Leído
                         </button>
                         <button
-                            on:click={() => moveBook(book, 'toRead')}
+                            on:click={() => moveBook(book, 'recommended')}
                             class="text-green-600 hover:underline text-sm"
                         >
-                            Leer después
+                            Recommended
                         </button>
                         <button
                             on:click={() => removeBook(book.id)}
@@ -130,7 +115,7 @@
 
         </ul>
         {:else}
-        <p>No hay libros recomendados todavía.</p>
+        <p>No hay libros que planeas leer todavía.</p>
         {/if}
     </section>
 </main>
