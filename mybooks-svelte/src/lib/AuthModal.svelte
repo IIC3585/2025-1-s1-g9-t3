@@ -24,12 +24,6 @@
         >
             Registrarse
         </button>
-        <button
-            on:click={() => window.location.href = '/guest'}
-            class="bg-white border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-100 transition w-8/10 mx-auto"
-        >
-            Continuar como invitado
-        </button>
     </div>
   </div>
 </div>
