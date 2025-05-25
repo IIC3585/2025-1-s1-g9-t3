@@ -117,7 +117,7 @@
                             on:click={() => moveBook(book, 'toRead')}
                             class="text-green-600 hover:underline text-sm"
                         >
-                            Agregar a leer después
+                            Leer después
                         </button>
                         <button
                             on:click={() => removeBook(book.id)}

@@ -20,7 +20,8 @@
     async function loadBooks() {
         const userId = $user.uid;
         const snapshot = await getDocs(collection(db, 'users', userId, 'toRead'));
-        readBooks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        toRead = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
     }
 
     onMount(async () => {
@@ -49,7 +50,8 @@
         } else {
             await setDoc(doc(db, 'users', userId, targetList, book.id), book);
             await deleteDoc(doc(db, 'users', userId, 'toRead', book.id));
-            toRead.value = toRead.value.filter(b => b.id !== book.id);
+            toRead = toRead.filter(b => b.id !== book.id);
+
         }
     }
 
@@ -116,7 +118,7 @@
                             on:click={() => moveBook(book, 'recommended')}
                             class="text-green-600 hover:underline text-sm"
                         >
-                            Recommended
+                            Recomendar
                         </button>
                         <button
                             on:click={() => removeBook(book.id)}
