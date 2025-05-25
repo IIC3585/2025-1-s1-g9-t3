@@ -72,7 +72,7 @@ const handleRegister = async () => {
     });
 
     userStore.setUser(user);
-    $emit('close'); // Cerrar modal si todo funciona
+    emit('close');
   } catch (err) {
     error.value = err.message;
     console.error(err);
