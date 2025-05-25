@@ -12,7 +12,7 @@
 
   const goToAuth = () => {
     if ($user) {
-      goto('/search'); // Redirige directo si hay sesión activa
+      goto('/home'); // Redirige directo si hay sesión activa
     } else {
       showModal = true;
       modalType = 'auth';
@@ -22,7 +22,7 @@
 
 <section class="min-h-screen bg-gradient-to-b from-yellow-100 via-orange-100 to-orange-200 flex flex-col justify-between font-sans">
   <!-- Hero -->
-  <div class="flex justify-center mt-16 sm:mt-20 px-4">
+  <div class="flex justify-center mt-16 sm:mt-1 px-4">
     <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 sm:-translate-x-10 text-center sm:text-left">
       <img src="/logo.svg" alt="MyBooks Logo" class="h-20 sm:h-28 md:h-32 w-auto" />
       <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-800 tracking-tight">My Books</h1>
