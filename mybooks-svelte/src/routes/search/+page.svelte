@@ -1,67 +1,87 @@
 <script>
-    import { goto } from '$app/navigation';
-    import { auth } from '$lib/firebase';
-    import { signOut } from 'firebase/auth';
-    import { user } from '$lib/stores/user';
-    import { page } from '$app/stores';
+    import { auth, db } from '$lib/firebase';
+    import { addDoc, collection } from 'firebase/firestore';
+    import { onMount } from 'svelte';
 
-    let currentUser;
-    $: if ($user) {
-        currentUser = $user.displayName || $user.email;
-    }
+    let query = '';
+    let results = [];
+    let selectedList = 'readBooks';
 
-    let category = 'General';
-    $: category = $page.url.searchParams.get('category') || 'General';
+    const searchBooks = async () => {
+        if (!query) return;
+        const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        results = data.items || [];
+    };
 
-    let readBooks = [
-        { id: 1, title: '1984', author: 'George Orwell', year: 1949 },
-        { id: 2, title: 'El nombre de la rosa', author: 'Umberto Eco', year: 1980 },
-        { id: 3, title: 'Cien años de soledad', author: 'Gabriel García Márquez', year: 1967 }
-    ];
+    const addBookToList = async (book) => {
+        const userId = auth.currentUser?.uid;
+        if (!userId) return alert("Debes iniciar sesión.");
 
-    const closeSession = async () => {
-        await signOut(auth);
-        goto('/');
+        const volumeInfo = book.volumeInfo;
+        const bookData = {
+            title: volumeInfo.title,
+            author: volumeInfo.authors?.[0] || 'Desconocido',
+            year: volumeInfo.publishedDate?.slice(0, 4) || 'N/A',
+            image: volumeInfo.imageLinks?.thumbnail || null
+        };
+
+
+        await addDoc(collection(db, `users/${userId}/${selectedList}`), bookData);
+        alert(`Libro agregado a la lista "${selectedList}"`);
     };
 </script>
-<main class="p-8 font-sans">
-    <nav class="bg-white shadow-md p-4 flex justify-between items-center mb-4">
-        <div class="text-2xl font-bold flex items-center gap-4">
-            <a href="/home" class="flex items-center gap-2">
-                <img src="/logo.svg" alt="MyBooks Logo" class="h-10 sm:h-20 md:h-15 w-auto" />
-                MyBooks
-            </a>
-        </div>
-        <div>
-            {#if $user}
-                <span class="mr-4">Bienvenido, {currentUser}</span>
-                <button
-                on:click={closeSession}
-                class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-                >
-                    Cerrar sesión
-                </button>
-            {:else}
-                <span class="text-gray-600">No has iniciado sesión.</span>
-            {/if}
-        </div>
-    </nav>
 
-    <section class="mb-8">  
-        <h1 class="text-2xl font-bold mb-4">Busqueda de Libros de {category}</h1>
+<div class="mb-4">
+    <input
+        type="text"
+        bind:value={query}
+        placeholder="Buscar libros..."
+        class="border p-2 w-full mb-2"
+    />
+    <select bind:value={selectedList} class="border p-2 w-full mb-2">
+        <option value="readBooks">Leídos</option>
+        <option value="toRead">Por Leer</option>
+        <option value="recommended">Recomendados</option>
+    </select>
+    <button on:click={searchBooks} class="bg-blue-600 text-white px-4 py-2 rounded">
+        Buscar
+    </button>
+</div>
 
-        {#if readBooks.length > 0}
-        <ul class="space-y-4">
-            {#each readBooks as book}
-            <li class="p-4 border rounded-xl shadow-md">
-                <h2 class="text-xl font-semibold">{book.title}</h2>
-                <p class="text-gray-700">Autor: {book.author}</p>
-                <p class="text-gray-500 text-sm">Publicado en {book.year}</p>
+{#if results.length > 0}
+    <ul class="space-y-4">
+        {#each results as book}
+            <li class="p-4 border rounded-xl shadow-md flex gap-4 items-start">
+                <!-- Imagen del libro -->
+                {#if book.volumeInfo.imageLinks?.thumbnail}
+                    <img
+                        src={book.volumeInfo.imageLinks.thumbnail}
+                        alt="Portada de {book.volumeInfo.title}"
+                        class="w-24 h-auto object-cover rounded-md"
+                    />
+                {:else}
+                    <div class="w-24 h-32 bg-gray-200 flex items-center justify-center text-gray-500 text-sm rounded-md">
+                        Sin imagen
+                    </div>
+                {/if}
+
+                <!-- Info del libro -->
+                <div class="flex-1">
+                    <h2 class="text-xl font-semibold">{book.volumeInfo.title}</h2>
+                    <p class="text-gray-700">Autor: {book.volumeInfo.authors?.[0] || 'Desconocido'}</p>
+                    <p class="text-gray-500 text-sm">Publicado en {book.volumeInfo.publishedDate?.slice(0, 4)}</p>
+                    <button
+                        on:click={() => addBookToList(book)}
+                        class="mt-2 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                    >
+                        Agregar a "{selectedList}"
+                    </button>
+                </div>
             </li>
-            {/each}
-        </ul>
-        {:else}
-        <p>No encontre libros de {category}.</p>
-        {/if}
-    </section>
-</main>
+        {/each}
+
+    </ul>
+{:else}
+    <p>No hay resultados aún. Busca un libro arriba.</p>
+{/if}
