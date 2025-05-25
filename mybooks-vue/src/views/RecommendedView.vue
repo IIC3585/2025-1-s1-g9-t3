@@ -46,7 +46,7 @@
           <div class="mt-2 flex flex-col gap-2">
             <button @click="moveBook(book, 'readBooks')" class="text-blue-600 hover:underline text-sm">Leído</button>
             <button @click="moveBook(book, 'toRead')" class="text-green-600 hover:underline text-sm">Leer después</button>
-            <div v-if="user && user.email === book.recommendedBy" class="mt-2">
+            <div v-if="user.displayName === book.recommendedBy" class="mt-2">
               <button @click="removeBook(book.id)" class="text-red-600 hover:underline text-sm">Eliminar</button>
             </div>
           </div>
