@@ -85,7 +85,7 @@
                 Recomendar
               </button>
               <button
-                @click="addBookToList(book, 'want_to_read')"
+                @click="addBookToList(book, 'toRead')"
                 class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
               >
                 Agregar a Quiero Leer
@@ -155,13 +155,23 @@ const addBookToList = async (book, listName) => {
   };
 
   try {
-    await addDoc(collection(db, `users/${userId}/${listName}`), bookData);
-    alert(`Libro agregado a la lista "${listName}"`);
-  } catch (error) {
-    console.error('Error agregando libro:', error);
-    alert('No se pudo agregar el libro, intenta más tarde.');
-  }
-};
+      if (listName === 'recommended') {
+        // Guardar en colección compartida
+        await addDoc(collection(db, 'recommended'), {
+          ...bookData,
+          recommendedBy: currentUser || userEmail
+        });
+        alert(`Libro recomendado por ti y visible para todos los usuarios.`);
+      } else {
+        // Guardar en colección del usuario
+        await addDoc(collection(db, `users/${userId}/${listName}`), bookData);
+        alert(`Libro agregado a la lista "${listName}"`);
+      }
+    } catch (error) {
+      console.error('Error agregando libro:', error);
+      alert('No se pudo agregar el libro, intenta más tarde.');
+    }
+  };
 
 const closeSession = async () => {
   await signOut(auth);
