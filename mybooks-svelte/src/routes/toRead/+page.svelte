@@ -13,6 +13,16 @@
 
     let toRead = [];
 
+    $: if ($user && !toRead.length) {
+        loadBooks();
+    }
+
+    async function loadBooks() {
+        const userId = $user.uid;
+        const snapshot = await getDocs(collection(db, 'users', userId, 'toRead'));
+        readBooks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    }
+
     onMount(async () => {
         if ($user) {
             const booksRef = collection(db, 'users', $user.uid, 'toRead');
@@ -38,6 +48,8 @@
             });
         } else {
             await setDoc(doc(db, 'users', userId, targetList, book.id), book);
+            await deleteDoc(doc(db, 'users', userId, 'toRead', book.id));
+            toRead.value = toRead.value.filter(b => b.id !== book.id);
         }
     }
 
