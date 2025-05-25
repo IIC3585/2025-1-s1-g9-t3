@@ -31,10 +31,14 @@
         const userId = $user.uid;
 
         // Añadir el libro a la nueva lista
-        await setDoc(doc(db, 'users', userId, targetList, book.id), book);
-
-        // Eliminarlo de la lista actual
-        await deleteDoc(doc(db, 'users', userId, 'toRead', book.id));
+        if (targetList === 'recommended') {
+            await setDoc(doc(db, 'recommended', book.id), {
+                ...book,
+                recommendedBy: currentUser || $user.email
+            });
+        } else {
+            await setDoc(doc(db, 'users', userId, targetList, book.id), book);
+        }
     }
 
     async function removeBook(bookId) {
