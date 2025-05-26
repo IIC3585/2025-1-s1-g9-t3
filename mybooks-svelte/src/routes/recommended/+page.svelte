@@ -28,9 +28,7 @@
 
     onMount(async () => {
         if (!$user) return;
-        const snapshot = await getDocs(collection(db, 'recommended'));
-        recommended = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        loadBooks();
     });
 
 

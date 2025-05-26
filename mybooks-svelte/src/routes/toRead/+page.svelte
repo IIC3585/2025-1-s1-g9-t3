@@ -26,9 +26,7 @@
 
     onMount(async () => {
         if ($user) {
-            const booksRef = collection(db, 'users', $user.uid, 'toRead');
-            const snapshot = await getDocs(booksRef);
-            toRead = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            loadBooks();
         }
     });
 
