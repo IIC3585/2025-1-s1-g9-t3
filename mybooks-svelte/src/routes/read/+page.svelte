@@ -97,12 +97,18 @@
             <li class="transition p-4 border rounded-xl shadow-md flex gap-4 items-start">
             <!-- Image block -->
             {#if book.volumeInfo?.imageLinks?.thumbnail || book.image}
-                <img
-                    src={book.volumeInfo?.imageLinks?.thumbnail || book.image}
-                    alt="Portada de {book.title}"
-                    class="w-24 h-full object-cover rounded-md cursor-pointer"
+                <button
+                    type="button"
+                    class="p-0 border-none bg-transparent w-24 h-full"
                     on:click={() => viewBookDetails(book)}
-                />
+                    aria-label="Ver detalles de {book.title}"
+                >
+                    <img
+                        src={book.volumeInfo?.imageLinks?.thumbnail || book.image}
+                        alt="Portada de {book.title}"
+                        class="w-24 h-full object-cover rounded-md cursor-pointer"
+                    />
+                </button>
 
             {:else}
                 <div class="w-24 h-32 bg-gray-200 flex items-center justify-center text-gray-500 text-sm rounded-md">
@@ -111,31 +117,36 @@
             {/if}
 
             <!-- Text content -->
-            <div class="flex-1 cursor-pointer" on:click={() => viewBookDetails(book)}>
-    <h2 class="text-xl font-semibold">{book.volumeInfo?.title || book.title}</h2>
+            <button
+                type="button"
+                class="flex-1 text-left cursor-pointer bg-transparent border-none p-0"
+                on:click={() => viewBookDetails(book)}
+            >
+                <h2 class="text-xl font-semibold">{book.volumeInfo?.title || book.title}</h2>
 
-    <div class="flex items-center text-yellow-500 text-lg mt-1">
-        {#each Array(5) as _, i}
-        {#if book.volumeInfo?.averageRating && i < Math.round(book.volumeInfo.averageRating)}
-            ★
-        {:else}
-            ☆
-        {/if}
-        {/each}
-        <span class="text-sm text-gray-600 ml-2">
-        {#if book.volumeInfo?.ratingsCount}
-            ({book.volumeInfo.ratingsCount} reseñas)
-        {:else}
-            Sin reseñas
-        {/if}
-        </span>
-    </div>
+                <div class="flex items-center text-yellow-500 text-lg mt-1">
+                    {#each Array(5) as _, i}
+                    {#if book.volumeInfo?.averageRating && i < Math.round(book.volumeInfo.averageRating)}
+                        ★
+                    {:else}
+                        ☆
+                    {/if}
+                    {/each}
+                    <span class="text-sm text-gray-600 ml-2">
+                    {#if book.volumeInfo?.ratingsCount}
+                        ({book.volumeInfo.ratingsCount} reseñas)
+                    {:else}
+                        Sin reseñas
+                    {/if}
+                    </span>
+                </div>
 
-    <p class="text-gray-700 mt-1">Autor: {book.volumeInfo?.authors?.[0] || book.author}</p>
-    <p class="text-gray-500 text-sm">
-        Publicado en {book.volumeInfo?.publishedDate?.slice(0, 4) || book.year || 'N/A'}
-    </p>
-    </div>
+                <p class="text-gray-700 mt-1">Autor: {book.volumeInfo?.authors?.[0] || book.author}</p>
+                <p class="text-gray-500 text-sm">
+                    Publicado en {book.volumeInfo?.publishedDate?.slice(0, 4) || book.year || 'N/A'}
+                </p>
+            </button>
+
 
 
           <!-- Action buttons -->
