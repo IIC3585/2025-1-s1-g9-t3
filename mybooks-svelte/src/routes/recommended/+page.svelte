@@ -6,6 +6,7 @@
     import { onMount } from 'svelte';
     import { collection, getDocs, doc, deleteDoc, setDoc } from 'firebase/firestore';
     import { selectedBook } from '$lib/stores/book';
+    import { recommendBook } from '$lib/recommendBook';
 
 
     let currentUser;
@@ -55,10 +56,33 @@
         await setDoc(doc(db, 'users', userId, targetList, book.id), book);
     }
 
+    import { getDoc } from 'firebase/firestore';
+
     async function removeBook(bookId) {
-        await deleteDoc(doc(db, 'recommended', bookId));
-        recommended = recommended.filter(b => b.id !== bookId);
-    }
+      const docRef = doc(db, 'recommended', bookId);
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) return;
+
+      const data = snap.data();
+      const updatedList = (data.recommendedBy || []).filter(email => email !== currentUser);
+
+      if (updatedList.length === 0) {
+        await deleteDoc(docRef);
+      } else {
+        await setDoc(docRef, {
+          ...data,
+          recommendedBy: updatedList
+        });
+      }
+
+      // Update the local state
+      recommended = recommended.map(book => {
+        if (book.id === bookId) {
+          return { ...book, recommendedBy: updatedList };
+        }
+        return book;
+      }).filter(book => book.recommendedBy.length > 0);
+    };
 
 </script>
 
@@ -146,20 +170,37 @@
             >
               Marcar como Leído
             </button>
+            {#if Array.isArray(book.recommendedBy) && book.recommendedBy.includes(currentUser)}
+              <button
+                on:click={() => removeBook(book.id)}
+                class="bg-red-500 text-white px-3 py-1 rounded-xl hover:bg-red-600 transition"
+              >
+                Quitar recomendación
+              </button>
+            {:else}
+              <button
+  on:click={async () => {
+    await recommendBook(book, currentUser);
+    const updatedSnap = await getDoc(doc(db, 'recommended', book.id));
+    const updatedData = updatedSnap.data();
+
+    // Update only that book in the local array
+    recommended = recommended.map(b =>
+      b.id === book.id ? { ...b, ...updatedData } : b
+    );
+  }}
+  class="bg-yellow-500 text-white px-3 py-1 rounded-xl hover:bg-yellow-600 transition"
+>
+  Recomendar
+</button>
+
+            {/if}
             <button
               on:click={() => moveBook(book, 'toRead')}
               class="bg-blue-500 text-white px-3 py-1 rounded-xl hover:bg-blue-600 transition"
             >
               Leer después
             </button>
-            {#if book.recommendedBy === currentUser}
-              <button
-                on:click={() => removeBook(book.id)}
-                class="bg-red-500 text-white px-3 py-1 rounded-xl hover:bg-red-600 transition"
-              >
-                Eliminar
-              </button>
-            {/if}
           </div>
         </li>
       {/each}
