@@ -100,10 +100,10 @@
     </div>
     <div>
       {#if $user}
-        <span class="mr-4">Bienvenido, {currentUser}</span>
+        <span class="mr-4 text-xl">Bienvenido, {currentUser}</span>
         <button
           on:click={closeSession}
-          class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+          class="bg-red-500 text-white px-4 py-2 rounded-xl hover:bg-red-600 transition"
         >
           Cerrar sesión
         </button>
@@ -118,9 +118,9 @@
       <button
         on:click={() => goto(list.route)}
         class="px-6 py-3 rounded-md font-semibold text-white transition
-              {list.name.includes('Leídos') ? 'bg-green-600 hover:bg-green-700' : ''}
-              {list.name.includes('Recomendados') ? 'bg-yellow-600 hover:bg-yellow-700' : ''}
-              {list.name.includes('Quiero Leer') ? 'bg-blue-600 hover:bg-blue-700' : ''}"
+              {list.name.includes('Leídos') ? 'bg-green-600 rounded-xl hover:bg-green-700' : ''}
+              {list.name.includes('Recomendados') ? 'bg-yellow-600 rounded-xl hover:bg-yellow-700' : ''}
+              {list.name.includes('Quiero Leer') ? 'bg-blue-600 rounded-xl hover:bg-blue-700' : ''}"
       >
         {list.name}
       </button>
@@ -135,16 +135,34 @@
         type="text"
         bind:value={query}
         placeholder="Buscar libros..."
-        class="border p-2 w-full mb-2 rounded"
+        class="border p-2 w-full mb-2 rounded-lg"
         on:keydown={(e) => e.key === 'Enter' && searchBooks()}
       />
-      <button
-        on:click={searchBooks}
-        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-      >
-        Buscar
-      </button>
+
+      <div class="flex justify-between flex-wrap gap-2">
+        <button
+          on:click={searchBooks}
+          class="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition"
+        >
+          Buscar
+        </button>
+        {#if results.length > 0}
+        <div class="flex-1 text-right">
+          <button
+            on:click={() => {
+              query = '';
+              results = [];
+              searchedBooks.set([]);
+            }}
+            class="bg-gray-300 text-gray-800 px-4 py-1 rounded-xl hover:bg-gray-400 transition"
+          >
+            X
+          </button>
+        </div>
+        {/if}
+      </div>
     </div>
+
 
     {#if results.length > 0}
       <ul class="space-y-4">
@@ -189,19 +207,19 @@
               <div class="mt-2 flex gap-2 flex-wrap">
                 <button
                   on:click={() => addBookToList(book, 'readBooks')}
-                  class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                  class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600"
                 >
                   Agregar a Leídos
                 </button>
                 <button
                   on:click={() => addBookToList(book, 'recommended')}
-                  class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+                  class="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600"
                 >
                   Recomendar
                 </button>
                 <button
                   on:click={() => addBookToList(book, 'toRead')}
-                  class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                  class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600"
                 >
                   Agregar a Quiero Leer
                 </button>

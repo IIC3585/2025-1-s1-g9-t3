@@ -66,7 +66,7 @@
   <main class="p-8 max-w-5xl mx-auto font-sans space-y-10 bg-white rounded-xl shadow-lg mt-6">
     <button
     on:click={() => history.back()}
-    class="bg-gray-200 text-gray-800 font-medium px-4 py-2 rounded hover:bg-gray-300 transition w-fit"
+    class="bg-gray-200 text-gray-800 font-medium px-4 py-2 rounded-xl hover:bg-gray-300 transition w-fit"
     >
     ← Volver
     </button>
@@ -134,7 +134,7 @@
             <a
               href={book.saleInfo.buyLink}
               target="_blank"
-              class="mt-2 inline-block bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition"
+              class="mt-2 inline-block bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700 transition"
             >
               Comprar
             </a>
@@ -156,19 +156,19 @@
         <div class="mt-6 flex gap-3 flex-wrap">
           <button
             on:click={() => addBookToList('readBooks')}
-            class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+            class="bg-green-500 text-white px-4 py-2 rounded-xl hover:bg-green-600 transition"
           >
             Agregar a Leídos
           </button>
           <button
             on:click={() => addBookToList('recommended')}
-            class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition"
+            class="bg-yellow-500 text-white px-4 py-2 rounded-xl hover:bg-yellow-600 transition"
           >
             Recomendar
           </button>
           <button
             on:click={() => addBookToList('toRead')}
-            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+            class="bg-blue-500 text-white px-4 py-2 rounded-xl hover:bg-blue-600 transition"
           >
             Agregar a Quiero Leer
           </button>
