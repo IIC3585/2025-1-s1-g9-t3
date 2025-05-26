@@ -4,6 +4,7 @@
   import { doc, setDoc, getDoc, addDoc, collection } from 'firebase/firestore';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import { recommendBook } from '$lib/recommendBook';
 
   let book;
 
@@ -161,7 +162,7 @@
             Agregar a Leídos
           </button>
           <button
-            on:click={() => addBookToList('recommended')}
+            on:click={() => recommendBook(book, currentUser)}
             class="bg-yellow-500 text-white px-4 py-2 rounded-xl hover:bg-yellow-600 transition"
           >
             Recomendar
