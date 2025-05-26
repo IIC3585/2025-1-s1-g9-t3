@@ -1,7 +1,7 @@
-import { initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { useUserStore } from './store/user';
+
+import { initializeApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
+import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: "AIzaSyCgLlLgdGE7Y3IBxJAyMbVnA6i9aBUIIdA",
@@ -10,23 +10,9 @@ const firebaseConfig = {
   storageBucket: "mybooks-e4a30.firebasestorage.app",
   messagingSenderId: "421221868497",
   appId: "1:421221868497:web:f323c4151ba533ca2af6f0"
-};
+}
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+const app = initializeApp(firebaseConfig)
 
-// Initialize auth state listener
-export const initializeAuthListener = () => {
-  const userStore = useUserStore();
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // User is signed in
-      userStore.setUser(user);
-    } else {
-      // User is signed out
-      userStore.clearUser();
-    }
-  });
-};
+export const auth = getAuth(app)
+export const db = getFirestore(app)

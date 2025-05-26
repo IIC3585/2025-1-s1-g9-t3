@@ -1,8 +1,15 @@
+
 <template>
-  <router-view />
+  <RouterView />
 </template>
 
 <script setup>
-// This is the root component of the application
-// It simply renders the current route using router-view
 </script>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+</style>

@@ -1,3 +1,4 @@
+
 <template>
   <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
     <div class="bg-white/90 backdrop-blur-md rounded-xl shadow-xl w-full max-w-md p-8 relative">
@@ -7,22 +8,22 @@
 
       <form class="flex flex-col gap-4" @submit.prevent="handleRegister">
         <input
-          type="text"
           v-model="name"
+          type="text"
           placeholder="Nombre"
           class="px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400"
         />
 
         <input
-          type="email"
           v-model="email"
+          type="email"
           placeholder="Correo electrónico"
           class="px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400"
         />
 
         <input
-          type="password"
           v-model="password"
+          type="password"
           placeholder="Contraseña"
           class="px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400"
         />
@@ -41,43 +42,42 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '@/firebase';
-import { useUserStore } from '@/store/user';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { auth, db } from '@/firebase'
+import { currentUser } from '@/authUser'
 
-const userStore = useUserStore();
-
-const name = ref('');
-const email = ref('');
-const password = ref('');
-const error = ref('');
+const name = ref('')
+const email = ref('')
+const password = ref('')
+const error = ref('')
+const router = useRouter()
 
 const handleRegister = async () => {
-  error.value = '';
+  error.value = ''
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
-    const user = userCredential.user;
+    const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value)
+    const user = userCredential.user
 
-    // Agrega el nombre al perfil de Firebase Auth
-    await updateProfile(user, { displayName: name.value });
+    await updateProfile(user, { displayName: name.value })
 
-    // Guarda el usuario en Firestore
     await setDoc(doc(db, 'users', user.uid), {
       uid: user.uid,
       name: name.value,
       email: email.value,
       createdAt: serverTimestamp()
-    });
+    })
 
-    userStore.setUser(user);
-    emit('close');
+    // Esperar para asegurar propagación
+    setTimeout(() => {
+      router.push('/search')
+      emit('close')
+    }, 300)
   } catch (err) {
-    error.value = err.message;
-    console.error(err);
+    console.error(err)
+    error.value = err.message
   }
-};
-
-const emit = defineEmits(['close']);
+}
 </script>

@@ -1,24 +1,16 @@
+
 <template>
-  <div style="background-color: rgba(240, 249, 255, 0.75);" class="p-6 rounded-3xl shadow-md hover:shadow-lg transition transform hover:scale-105">
-    <div class="text-5xl sm:text-6xl mb-4 sm:mb-6" v-html="icon"></div>
-    <h2 class="text-lg sm:text-xl font-semibold mb-2">{{ title }}</h2>
-    <p>{{ description }}</p>
+  <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center justify-center">
+    <div class="text-4xl mb-4">{{ icon }}</div>
+    <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ title }}</h3>
+    <p class="text-gray-600">{{ description }}</p>
   </div>
 </template>
 
 <script setup>
 defineProps({
-  icon: {
-    type: String,
-    required: true
-  },
-  title: {
-    type: String,
-    required: true
-  },
-  description: {
-    type: String,
-    required: true
-  }
-});
+  icon: String,
+  title: String,
+  description: String
+})
 </script>

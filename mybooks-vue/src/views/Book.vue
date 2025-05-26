@@ -1,0 +1,1 @@
+<template><div><h2>Detalle del libro</h2></div></template>
