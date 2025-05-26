@@ -1,9 +1,12 @@
 <script>
+  import { get } from 'svelte/store';
   import { auth, db } from '$lib/firebase';
-  import { addDoc, collection } from 'firebase/firestore';
+  import { addDoc, collection, doc, setDoc, getDoc } from 'firebase/firestore';
   import { goto } from '$app/navigation';
   import { signOut } from 'firebase/auth';
   import { user } from '$lib/stores/user';
+  import { selectedBook } from '$lib/stores/book';
+  import { searchedBooks } from '$lib/stores/search';
 
   let currentUser;
   $: if ($user) {
@@ -18,7 +21,7 @@
   ];
 
   let query = '';
-  let results = [];
+  let results = get(searchedBooks);
 
   const searchBooks = async () => {
     if (!query.trim()) {
@@ -29,6 +32,8 @@
       const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`);
       const data = await res.json();
       results = data.items || [];
+      searchedBooks.set(results)
+      console.log(results);
     } catch (error) {
       console.error('Error buscando libros:', error);
       results = [];
@@ -40,6 +45,7 @@
     if (!userId) return alert("Debes iniciar sesión para agregar libros.");
 
     const volumeInfo = book.volumeInfo;
+    const bookId = book.id; // this is the unique Google Books volume ID
     const bookData = {
       title: volumeInfo.title,
       author: volumeInfo.authors?.[0] || 'Desconocido',
@@ -49,21 +55,33 @@
 
     try {
       if (listName === 'recommended') {
-        // Guardar en colección compartida
         await addDoc(collection(db, 'recommended'), {
           ...bookData,
-          recommendedBy: currentUser || userEmail
+          recommendedBy: currentUser
         });
         alert(`Libro recomendado por ti y visible para todos los usuarios.`);
       } else {
-        // Guardar en colección del usuario
-        await addDoc(collection(db, `users/${userId}/${listName}`), bookData);
+        const bookRef = doc(db, `users/${userId}/${listName}`, bookId);
+        const docSnap = await getDoc(bookRef);
+
+        if (docSnap.exists()) {
+          alert("Este libro ya está en tu lista.");
+          return;
+        }
+
+        await setDoc(bookRef, bookData);
         alert(`Libro agregado a la lista "${listName}"`);
       }
     } catch (error) {
       console.error('Error agregando libro:', error);
       alert('No se pudo agregar el libro, intenta más tarde.');
     }
+  };
+
+
+  const viewBookDetails = (book) => {
+    selectedBook.set(book);
+    goto('/book');
   };
 
   const closeSession = async () => {
@@ -131,12 +149,12 @@
     {#if results.length > 0}
       <ul class="space-y-4">
         {#each results as book}
-          <li class="p-4 border rounded-xl shadow-md flex gap-4 items-start">
+          <li class="transition p-4 border rounded-xl shadow-md flex gap-4 items-start">
             {#if book.volumeInfo.imageLinks?.thumbnail}
               <img
                 src={book.volumeInfo.imageLinks.thumbnail}
                 alt="Portada de {book.volumeInfo.title}"
-                class="w-24 h-auto object-cover rounded-md"
+                class="w-24 h-full object-cover rounded-md cursor-pointer hover:bg-gray-50"
               />
             {:else}
               <div class="w-24 h-32 bg-gray-200 flex items-center justify-center text-gray-500 text-sm rounded-md">
@@ -144,10 +162,30 @@
               </div>
             {/if}
 
-            <div class="flex-1">
-              <h3 class="text-xl font-semibold">{book.volumeInfo.title}</h3>
-              <p class="text-gray-700">Autor: {book.volumeInfo.authors?.[0] || 'Desconocido'}</p>
-              <p class="text-gray-500 text-sm">Publicado en {book.volumeInfo.publishedDate?.slice(0, 4) || 'N/A'}</p>
+            <div>
+            <div class="flex-1 cursor-pointer" on:click={() => viewBookDetails(book)}>
+            <h3 class="text-xl font-semibold">{book.volumeInfo.title}</h3>
+            <div class="flex items-center text-yellow-500 text-lg">
+            {#each Array(5) as _, i}
+              {#if book.volumeInfo.averageRating && i < Math.round(book.volumeInfo.averageRating)}
+                ★
+              {:else}
+                ☆
+              {/if}
+            {/each}
+            <span class="text-sm text-gray-600 ml-2">
+              {#if book.volumeInfo.ratingsCount}
+                ({book.volumeInfo.ratingsCount} reseñas)
+              {:else}
+                Sin reseñas
+              {/if}
+            </span>
+          </div>
+
+            <p class="text-gray-700">Autor: {book.volumeInfo.authors?.[0] || 'Desconocido'}</p>
+            <p class="text-gray-500 text-sm">Publicado en {book.volumeInfo.publishedDate?.slice(0, 4) || 'N/A'}</p>
+            </div>
+
               <div class="mt-2 flex gap-2 flex-wrap">
                 <button
                   on:click={() => addBookToList(book, 'readBooks')}
