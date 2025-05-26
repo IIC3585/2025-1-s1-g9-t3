@@ -7,6 +7,7 @@
   import { user } from '$lib/stores/user';
   import { selectedBook } from '$lib/stores/book';
   import { searchedBooks } from '$lib/stores/search';
+  import { recommendBook } from '$lib/recommendBook';
 
   let currentUser;
   $: if ($user) {
@@ -44,23 +45,9 @@
     const userId = auth.currentUser?.uid;
     if (!userId) return alert("Debes iniciar sesión para agregar libros.");
 
-    const volumeInfo = book.volumeInfo;
     const bookId = book.id; // this is the unique Google Books volume ID
-    const bookData = {
-      title: volumeInfo.title,
-      author: volumeInfo.authors?.[0] || 'Desconocido',
-      year: volumeInfo.publishedDate?.slice(0, 4) || 'N/A',
-      image: volumeInfo.imageLinks?.thumbnail || null
-    };
 
     try {
-      if (listName === 'recommended') {
-        await addDoc(collection(db, 'recommended'), {
-          ...bookData,
-          recommendedBy: currentUser
-        });
-        alert(`Libro recomendado por ti y visible para todos los usuarios.`);
-      } else {
         const bookRef = doc(db, `users/${userId}/${listName}`, bookId);
         const docSnap = await getDoc(bookRef);
 
@@ -69,9 +56,8 @@
           return;
         }
 
-        await setDoc(bookRef, bookData);
+        await setDoc(bookRef, book);
         alert(`Libro agregado a la lista "${listName}"`);
-      }
     } catch (error) {
       console.error('Error agregando libro:', error);
       alert('No se pudo agregar el libro, intenta más tarde.');
@@ -212,7 +198,7 @@
                   Agregar a Leídos
                 </button>
                 <button
-                  on:click={() => addBookToList(book, 'recommended')}
+                  on:click={() => recommendBook(book, currentUser)}
                   class="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600"
                 >
                   Recomendar
