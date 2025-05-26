@@ -167,28 +167,33 @@
             {/if}
 
             <div>
-            <div class="flex-1 cursor-pointer" on:click={() => viewBookDetails(book)}>
+          <button
+            type="button"
+            class="flex-1 text-left cursor-pointer bg-transparent border-none p-0 focus:outline-none"
+            on:click={() => viewBookDetails(book)}
+            aria-label="Ver detalles del libro"
+          >
             <h3 class="text-xl font-semibold">{book.volumeInfo.title}</h3>
             <div class="flex items-center text-yellow-500 text-lg">
-            {#each Array(5) as _, i}
-              {#if book.volumeInfo.averageRating && i < Math.round(book.volumeInfo.averageRating)}
-                ★
-              {:else}
-                ☆
-              {/if}
-            {/each}
-            <span class="text-sm text-gray-600 ml-2">
-              {#if book.volumeInfo.ratingsCount}
-                ({book.volumeInfo.ratingsCount} reseñas)
-              {:else}
-                Sin reseñas
-              {/if}
-            </span>
-          </div>
+              {#each Array(5) as _, i}
+                {#if book.volumeInfo.averageRating && i < Math.round(book.volumeInfo.averageRating)}
+                  ★
+                {:else}
+                  ☆
+                {/if}
+              {/each}
+              <span class="text-sm text-gray-600 ml-2">
+                {#if book.volumeInfo.ratingsCount}
+                  ({book.volumeInfo.ratingsCount} reseñas)
+                {:else}
+                  Sin reseñas
+                {/if}
+              </span>
+            </div>
 
             <p class="text-gray-700">Autor: {book.volumeInfo.authors?.[0] || 'Desconocido'}</p>
             <p class="text-gray-500 text-sm">Publicado en {book.volumeInfo.publishedDate?.slice(0, 4) || 'N/A'}</p>
-            </div>
+          </button>
 
               <div class="mt-2 flex gap-2 flex-wrap">
                 <button

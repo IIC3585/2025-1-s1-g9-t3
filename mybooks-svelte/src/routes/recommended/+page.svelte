@@ -116,12 +116,19 @@
         <li class="transition p-4 border rounded-xl shadow-md flex gap-4 items-start">
           <!-- Image block -->
           {#if book.volumeInfo?.imageLinks?.thumbnail || book.image}
-            <img
-              src={book.volumeInfo?.imageLinks?.thumbnail || book.image}
-              alt="Portada de {book.title}"
-              class="w-24 h-full object-cover rounded-md cursor-pointer"
+            <button
+              type="button"
+              class="p-0 border-0 bg-transparent w-24 h-full rounded-md cursor-pointer focus:outline-none"
               on:click={() => viewBookDetails(book)}
-            />
+              aria-label="Ver detalles de {book.title}"
+            >
+              <img
+                src={book.volumeInfo?.imageLinks?.thumbnail || book.image}
+                alt="Portada de {book.title}"
+                class="w-24 h-full object-cover rounded-md"
+                draggable="false"
+              />
+            </button>
           {:else}
             <div class="w-24 h-32 bg-gray-200 flex items-center justify-center text-gray-500 text-sm rounded-md">
               Sin imagen
@@ -129,7 +136,12 @@
           {/if}
 
           <!-- Book content -->
-          <div class="flex-1 cursor-pointer" on:click={() => viewBookDetails(book)}>
+          <button
+            type="button"
+            class="flex-1 text-left cursor-pointer focus:outline-none"
+            on:click={() => viewBookDetails(book)}
+            aria-label="Ver detalles del libro"
+          >
             <h2 class="text-xl font-semibold">{book.volumeInfo?.title || book.title}</h2>
 
             <div class="flex items-center text-yellow-500 text-lg mt-1">
@@ -158,7 +170,7 @@
             <p class="text-gray-500 text-sm">
               Recomendado por: {book.recommendedBy}
             </p>
-          </div>
+          </button>
 
           <!-- Action buttons -->
           <div class="mt-2 flex flex-col gap-2">
